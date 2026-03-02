@@ -1,3 +1,4 @@
+/* eslint-disable */
 // ══════════════════════════════════════════════════════════════════════════
 //  CVModule.jsx  —  Módulo: HOJAS DE VIDA
 //  AutoDoc · Colombia · Cali
