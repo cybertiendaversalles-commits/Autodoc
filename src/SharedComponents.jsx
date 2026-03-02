@@ -1,4 +1,3 @@
-/* eslint-disable */
 // ══════════════════════════════════════════════════════════════════════════
 //  SharedComponents.jsx  —  Utilidades y componentes compartidos
 //  AutoDoc · Colombia · Cali
@@ -137,6 +136,8 @@ export const ldSc = src => new Promise((res, rej) => {
 
 /** Exporta texto plano a archivo .docx */
 export const expWord = async (text, fn) => {
+  const { Document, Packer, Paragraph, TextRun, AlignmentType } =
+    await import("https://cdn.skypack.dev/docx@8.5.0");
   const doc = new Document({
     sections: [{
       properties: {
@@ -220,14 +221,9 @@ IDs: referencias,poderes,autorizaciones,cuentas,cotizaciones,desistimientos,cont
 
 /** Llama a la API de Claude y retorna el texto de la respuesta */
 export const callAI = async (sys, msg, max = 1500) => {
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
+  const r = await fetch("/api/claude", {
     method: "POST",
-    headers: {
-  "Content-Type": "application/json",
-  "x-api-key": process.env.REACT_APP_ANTHROPIC_KEY || "",
-  "anthropic-version": "2023-06-01",
-  "anthropic-dangerous-allow-browser": "true",
-},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "claude-sonnet-4-20250514",
       max_tokens: max,
