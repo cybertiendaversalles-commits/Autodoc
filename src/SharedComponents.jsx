@@ -137,7 +137,6 @@ export const ldSc = src => new Promise((res, rej) => {
 
 /** Exporta texto plano a archivo .docx */
 export const expWord = async (text, fn) => {
-  const { Document, Packer, Paragraph, TextRun, AlignmentType } =
   const doc = new Document({
     sections: [{
       properties: {
