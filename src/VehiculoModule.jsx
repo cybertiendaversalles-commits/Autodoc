@@ -32,7 +32,7 @@
 // ══════════════════════════════════════════════════════════════════════════
 
 import { useState } from "react";
-
+import { Document, Packer, Paragraph, TextRun, AlignmentType } from "docx";
 /* ─── COLORES ────────────────────────────────────────────────────────────── */
 const CV  = "#7C2D12";
 const CV2 = "#C2410C";
