@@ -84,7 +84,6 @@ export const vhExpPDF = async (id, fn) => {
 };
 
 export const vhExpWord = async (text, fn) => {
-  const { Document, Packer, Paragraph, TextRun, AlignmentType } = await import("https://cdn.skypack.dev/docx@8.5.0");
   const doc = new Document({
     sections: [{ properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } },
       children: text.split("\n").map(l => {
