@@ -26,7 +26,7 @@
 // ══════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from "react";
-
+import { Document, Packer, Paragraph, TextRun, AlignmentType } from "docx";
 /* ─── CSS GLOBAL ─────────────────────────────────────────────────────────── */
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
