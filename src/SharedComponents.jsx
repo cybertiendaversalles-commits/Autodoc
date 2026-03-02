@@ -138,7 +138,6 @@ export const ldSc = src => new Promise((res, rej) => {
 /** Exporta texto plano a archivo .docx */
 export const expWord = async (text, fn) => {
   const { Document, Packer, Paragraph, TextRun, AlignmentType } =
-    await import("https://cdn.skypack.dev/docx@8.5.0");
   const doc = new Document({
     sections: [{
       properties: {
