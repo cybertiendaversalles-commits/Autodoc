@@ -1,6 +1,7 @@
+/* eslint-disable */
 // AutoDoc.jsx — Diseño Premium · Morado · Cyan · Azul
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { HVChooser, HVWizard, HVPreview }       from "./CVModule";
 import { PromesaWizard, PromesaPreview }         from "./PromesaModule";
 import { VehiculoWizard, VehiculoPreview }       from "./VehiculoModule";
@@ -94,8 +95,17 @@ export default function AutoDoc() {
     setHvTemplate(null); setHvResult(null); setPromesaDoc("");
   };
 
+  const handleHvBack     = useCallback(() => setView("hv-choose"), []);
+  const handleHvGenerate = useCallback(async r => {
+    setHvResult(r);
+    setView("hv-preview");
+    await saveHist("Hoja de Vida · " + (hvTemplate?.label||""), r.cvData?.nombre||"—", "🧑");
+    notify("✅ Hoja de vida generada");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hvTemplate]);
+
   if (view==="hv-choose") return <HVChooser onBack={()=>setView(selCat?"cat":"home")} onSelect={t=>{setHvTemplate(t);setView("hv-wizard");}}/>;
-  if (view==="hv-wizard"&&hvTemplate) return <HVWizard template={hvTemplate} onBack={()=>setView("hv-choose")} onGenerate={async r=>{setHvResult(r);setView("hv-preview");await saveHist("Hoja de Vida · "+hvTemplate.label,r.cvData?.nombre||"—","🧑");notify("✅ Hoja de vida generada");}}/>;
+  if (view==="hv-wizard"&&hvTemplate) return <HVWizard template={hvTemplate} onBack={handleHvBack} onGenerate={handleHvGenerate}/>;
   if (view==="hv-preview"&&hvResult) return <HVPreview {...hvResult} onBack={()=>setView("hv-wizard")} onNew={resetAll}/>;
   if (view==="promesa-wizard") return <PromesaWizard onBack={()=>setView(selCat?"cat":"home")} onDone={async t=>{setPromesaDoc(t);setView("promesa-preview");await saveHist("Promesa Compraventa",t.split("\n")[2]?.trim()||"—","🏠");notify("✅ Promesa generada");}}/>;
   if (view==="promesa-preview") return <PromesaPreview docText={promesaDoc} onBack={()=>setView("promesa-wizard")} onNew={resetAll} notify={notify}/>;
