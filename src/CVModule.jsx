@@ -719,10 +719,30 @@ export function HVChooser({ onBack, onSelect }) {
 /* ══════════════════════════════════════════════════════════════════════════
    HV WIZARD — 7 pasos
 ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Helper components defined OUTSIDE wizard to prevent focus loss on re-render ── */
+const _inputS = { width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" };
+const _Card = ({ children, style }) => <div style={{ background:"white", borderRadius:16, padding:20, marginBottom:14, boxShadow:"0 1px 5px rgba(0,0,0,.06)", ...style }}>{children}</div>;
+const _SL = ({ t }) => <div style={{ fontSize:11, fontWeight:700, color:"#6b7280", marginBottom:8, textTransform:"uppercase", letterSpacing:.5 }}>{t}</div>;
+const _FI = ({ label, placeholder, value, onChange, type="text", multi=false }) => (
+  <div style={{ marginBottom:14 }}>
+    {label && <div style={{ fontSize:11, fontWeight:600, color:"#94A3B8", marginBottom:5 }}>{label}</div>}
+    {multi
+      ? <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={3} style={{ ..._inputS, resize:"vertical" }}/>
+      : <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} style={_inputS}/>
+    }
+  </div>
+);
+const _AddB = ({ label, onClick, color }) => (
+  <button onClick={onClick} style={{ width:"100%", padding:"14px", background:color||"#5a8a3e", color:"white", border:"none", borderRadius:13, fontWeight:800, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:14 }}>
+    <span style={{ fontSize:16, fontWeight:300 }}>⊕</span> {label}
+  </button>
+);
+
 const STEPS = ["Perfil","Contacto","Educación","Experiencia","Habilidades","Resumen","Añadir sección"];
 const GREEN = "#5a8a3e"; const BG = "#ECECE8";
 
-const HVWizardInner = function HVWizard({ template, onBack, onGenerate }) {
+const HVWizardBase = function({ template, onBack, onGenerate }) {
   const [step, setStep] = useState(0);
   const [gen, setGen]   = useState(false);
   const photoRef        = useRef();
@@ -797,24 +817,11 @@ Completa datos faltantes de forma coherente. Genera JSON completo.`;
   const total = STEPS.length;
   const pct   = Math.round(((step + 1) / total) * 100);
 
-  /* ── Estilos compartidos dentro del wizard ── */
-  const inputS = { width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" };
-  const Card   = ({ children, style }) => <div style={{ background:"white", borderRadius:16, padding:20, marginBottom:14, boxShadow:"0 1px 5px rgba(0,0,0,.06)", ...style }}>{children}</div>;
-  const SL     = ({ t }) => <div style={{ fontSize:11, fontWeight:700, color:"#6b7280", marginBottom:8, textTransform:"uppercase", letterSpacing:.5 }}>{t}</div>;
-  const FI     = ({ label, placeholder, value, onChange, type="text", multi=false }) => (
-    <div style={{ marginBottom:14 }}>
-      {label && <div style={{ fontSize:11, fontWeight:600, color:"#94A3B8", marginBottom:5 }}>{label}</div>}
-      {multi
-        ? <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={3} style={{ ...inputS, resize:"vertical" }}/>
-        : <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} style={inputS}/>
-      }
-    </div>
-  );
-  const AddB = ({ label, onClick, color=GREEN }) => (
-    <button onClick={onClick} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:13, fontWeight:800, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:14 }}>
-      <span style={{ fontSize:16, fontWeight:300 }}>⊕</span> {label}
-    </button>
-  );
+  /* ── Usando componentes externos para evitar pérdida de foco ── */
+  const Card = _Card;
+  const SL   = _SL;
+  const FI   = _FI;
+  const AddB = _AddB;
 
   const TopBar = () => (
     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 20px", background:BG, borderBottom:"1px solid rgba(0,0,0,.05)", position:"sticky", top:0, zIndex:50 }}>
@@ -880,11 +887,11 @@ Completa datos faltantes de forma coherente. Genera JSON completo.`;
               <input ref={photoRef} type="file" accept="image/*" onChange={handlePhoto} style={{ display:"none" }}/>
             </div>
             <Card>
-              <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Full name" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
-              <input type="text" value={cargo} onChange={e => setCargo(e.target.value)} placeholder="Job title" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
-              <input type="text" value={fechaNac} onChange={e => setFechaNac(e.target.value)} placeholder="Date of birth" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
-              <input type="text" value={estadoCivil} onChange={e => setEstadoCivil(e.target.value)} placeholder="Estado civil" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
-              <input type="text" value={cedula} onChange={e => setCedula(e.target.value)} placeholder="Cédula de ciudadanía" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
+              <FI placeholder="Full name"              value={nombre}      onChange={setNombre}/>
+              <FI placeholder="Job title"              value={cargo}       onChange={setCargo}/>
+              <FI placeholder="Date of birth"          value={fechaNac}    onChange={setFechaNac}/>
+              <FI placeholder="Estado civil"           value={estadoCivil} onChange={setEstadoCivil}/>
+              <FI placeholder="Cédula de ciudadanía"   value={cedula}      onChange={setCedula}/>
             </Card>
             <NextBtn disabled={!nombre.trim()}/>
           </div>
@@ -894,8 +901,8 @@ Completa datos faltantes de forma coherente. Genera JSON completo.`;
         {step===1 && (
           <div className="step-in">
             <h1 style={{ fontSize:32, fontWeight:900, color:"#0F172A", textAlign:"center", marginBottom:24, marginTop:8 }}>Contact</h1>
-            <Card><SL t="Phone & Email"/><input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="Phone" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/><input type="text" value={direccion} onChange={e => setDireccion(e.target.value)} placeholder="Address" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/></Card>
-            <Card><SL t="City & Neighborhood"/><input type="text" value={ciudad} onChange={e => setCiudad(e.target.value)} placeholder="Ciudad (Ej: Cali, Valle)" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/><input type="text" value={barrio} onChange={e => setBarrio(e.target.value)} placeholder="Barrio" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/></Card>
+            <Card><SL t="Phone & Email"/><FI placeholder="Phone" value={telefono} onChange={setTelefono} type="tel"/><FI placeholder="Email" value={email} onChange={setEmail} type="email"/><FI placeholder="Address" value={direccion} onChange={setDireccion}/></Card>
+            <Card><SL t="City & Neighborhood"/><FI placeholder="Ciudad (Ej: Cali, Valle)" value={ciudad} onChange={setCiudad}/><FI placeholder="Barrio" value={barrio} onChange={setBarrio}/></Card>
             <NextBtn/>
           </div>
         )}
@@ -910,13 +917,13 @@ Completa datos faltantes de forma coherente. Genera JSON completo.`;
                   <div style={{ fontWeight:800, fontSize:13, color:"#1D4ED8" }}>Título #{i+1}</div>
                   {edu.length>1 && <button onClick={() => setEdu(p => p.filter((_,j) => j!==i))} style={{ background:"none", border:"none", color:"#DC2626", fontWeight:700, cursor:"pointer", fontSize:13 }}>✕ Quitar</button>}
                 </div>
-                <input type="text" value={e.titulo} onChange={e => (v => setEdu(p => { const n=[...p]; n[i].titulo=v; return n;)(e.target.value)} placeholder="Nombre del título obtenido" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
-                <input type="text" value={e.institucion} onChange={e => (v => setEdu(p => { const n=[...p]; n[i].institucion=v; return n;)(e.target.value)} placeholder="Institución educativa" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
+                <FI placeholder="Nombre del título obtenido" value={e.titulo}      onChange={v => setEdu(p => { const n=[...p]; n[i].titulo=v; return n; })}/>
+                <FI placeholder="Institución educativa"      value={e.institucion} onChange={v => setEdu(p => { const n=[...p]; n[i].institucion=v; return n; })}/>
                 <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr", gap:10 }}>
-                  <input type="text" value={e.ciudad} onChange={e => (v => setEdu(p => { const n=[...p]; n[i].ciudad=v; return n;)(e.target.value)} placeholder="Ciudad" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
-                  <input type="text" value={e.año} onChange={e => (v => setEdu(p => { const n=[...p]; n[i].año=v; return n;)(e.target.value)} placeholder="Año" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
+                  <FI placeholder="Ciudad" value={e.ciudad} onChange={v => setEdu(p => { const n=[...p]; n[i].ciudad=v; return n; })}/>
+                  <FI placeholder="Año"    value={e.año}    onChange={v => setEdu(p => { const n=[...p]; n[i].año=v; return n; })}/>
                 </div>
-                <input type="text" value={e.tipo} onChange={e => (v => setEdu(p => { const n=[...p]; n[i].tipo=v; return n;)(e.target.value)} placeholder="Tipo (Bachiller / Técnico / Tecnólogo / Profesional...)" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
+                <FI placeholder="Tipo (Bachiller / Técnico / Tecnólogo / Profesional...)" value={e.tipo} onChange={v => setEdu(p => { const n=[...p]; n[i].tipo=v; return n; })}/>
               </Card>
             ))}
             <AddB label="Add Education" onClick={() => setEdu(p => [...p, { titulo:"", institucion:"", ciudad:"", año:"", tipo:"" }])}/>
@@ -934,14 +941,14 @@ Completa datos faltantes de forma coherente. Genera JSON completo.`;
                   <div style={{ fontWeight:800, fontSize:13, color:"#B45309" }}>Empleo #{i+1}</div>
                   {exp.length>1 && <button onClick={() => setExp(p => p.filter((_,j) => j!==i))} style={{ background:"none", border:"none", color:"#DC2626", fontWeight:700, cursor:"pointer", fontSize:13 }}>✕ Quitar</button>}
                 </div>
-                <input type="text" value={e.cargo} onChange={e => (v => setExp(p => { const n=[...p]; n[i].cargo=v; return n;)(e.target.value)} placeholder="Cargo desempeñado" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
-                <input type="text" value={e.empresa} onChange={e => (v => setExp(p => { const n=[...p]; n[i].empresa=v; return n;)(e.target.value)} placeholder="Nombre de la empresa" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
-                <input type="text" value={e.ciudad} onChange={e => (v => setExp(p => { const n=[...p]; n[i].ciudad=v; return n;)(e.target.value)} placeholder="Ciudad" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
+                <FI placeholder="Cargo desempeñado"   value={e.cargo}    onChange={v => setExp(p => { const n=[...p]; n[i].cargo=v; return n; })}/>
+                <FI placeholder="Nombre de la empresa" value={e.empresa}  onChange={v => setExp(p => { const n=[...p]; n[i].empresa=v; return n; })}/>
+                <FI placeholder="Ciudad"               value={e.ciudad}   onChange={v => setExp(p => { const n=[...p]; n[i].ciudad=v; return n; })}/>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
-                  <input type="text" value={e.desde} onChange={e => (v => setExp(p => { const n=[...p]; n[i].desde=v; return n;)(e.target.value)} placeholder="Desde (MM/AAAA)" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
-                  <input type="text" value={e.hasta} onChange={e => (v => setExp(p => { const n=[...p]; n[i].hasta=v; return n;)(e.target.value)} placeholder="Hasta o Actual" style={{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}/>
+                  <FI placeholder="Desde (MM/AAAA)" value={e.desde} onChange={v => setExp(p => { const n=[...p]; n[i].desde=v; return n; })}/>
+                  <FI placeholder="Hasta o Actual"  value={e.hasta} onChange={v => setExp(p => { const n=[...p]; n[i].hasta=v; return n; })}/>
                 </div>
-                <textarea value={e.funciones} onChange={e => (v => setExp(p => { const n=[...p]; n[i].funciones=v; return n;)(e.target.value)} placeholder="Funciones (separa por ; o salto de línea)" rows={3} style={{ ...{{ width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" }}, resize:"vertical" }}/>
+                <FI placeholder="Funciones (separa por ; o salto de línea)" value={e.funciones} onChange={v => setExp(p => { const n=[...p]; n[i].funciones=v; return n; })} multi/>
               </Card>
             ))}
             <AddB label="Add Experience" onClick={() => setExp(p => [...p, { cargo:"", empresa:"", ciudad:"", desde:"", hasta:"", funciones:"" }])}/>
@@ -1064,7 +1071,7 @@ Completa datos faltantes de forma coherente. Genera JSON completo.`;
   );
 }
 
-export const HVWizard = memo(HVWizardInner);
+export const HVWizard = memo(HVWizardBase);
 
 /* ══════════════════════════════════════════════════════════════════════════
    HV PREVIEW — vista previa con exportación
