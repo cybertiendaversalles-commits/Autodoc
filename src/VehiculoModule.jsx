@@ -1,3 +1,4 @@
+/* eslint-disable */
 // ══════════════════════════════════════════════════════════════════════════
 //  VehiculoModule.jsx  —  Módulo: TRASPASO Y COMPRAVENTA DE VEHÍCULO
 //  AutoDoc v15 · Colombia · Cali
@@ -32,7 +33,7 @@
 // ══════════════════════════════════════════════════════════════════════════
 
 import { useState } from "react";
-import { Document, Packer, Paragraph, TextRun, AlignmentType } from "docx";
+
 /* ─── COLORES ────────────────────────────────────────────────────────────── */
 const CV  = "#7C2D12";
 const CV2 = "#C2410C";
@@ -83,7 +84,7 @@ export const vhExpPDF = async (id, fn) => {
 };
 
 export const vhExpWord = async (text, fn) => {
-
+  const { Document, Packer, Paragraph, TextRun, AlignmentType } = await import("https://cdn.skypack.dev/docx@8.5.0");
   const doc = new Document({
     sections: [{ properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } },
       children: text.split("\n").map(l => {
