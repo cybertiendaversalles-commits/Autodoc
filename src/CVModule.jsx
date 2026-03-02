@@ -722,6 +722,24 @@ export function HVChooser({ onBack, onSelect }) {
 const STEPS = ["Perfil","Contacto","Educación","Experiencia","Habilidades","Resumen","Añadir sección"];
 const GREEN = "#5a8a3e"; const BG = "#ECECE8";
 
+const inputS = { width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" };
+const WCard = ({ children, style }) => <div style={{ background:"white", borderRadius:16, padding:20, marginBottom:14, boxShadow:"0 1px 5px rgba(0,0,0,.06)", ...style }}>{children}</div>;
+const SL = ({ t }) => <div style={{ fontSize:11, fontWeight:700, color:"#6b7280", marginBottom:8, textTransform:"uppercase", letterSpacing:.5 }}>{t}</div>;
+const FI = ({ label, placeholder, value, onChange, type="text", multi=false }) => (
+  <div style={{ marginBottom:14 }}>
+    {label && <div style={{ fontSize:11, fontWeight:600, color:"#94A3B8", marginBottom:5 }}>{label}</div>}
+    {multi
+      ? <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={3} style={{ ...inputS, resize:"vertical" }}/>
+      : <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} style={inputS}/>
+    }
+  </div>
+);
+const AddB = ({ label, onClick, color=GREEN }) => (
+  <button onClick={onClick} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:13, fontWeight:800, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:14 }}>
+    <span style={{ fontSize:16, fontWeight:300 }}>⊕</span> {label}
+  </button>
+);
+
 export function HVWizard({ template, onBack, onGenerate }) {
   const [step, setStep] = useState(0);
   const [gen, setGen]   = useState(false);
@@ -797,24 +815,8 @@ Completa datos faltantes de forma coherente. Genera JSON completo.`;
   const total = STEPS.length;
   const pct   = Math.round(((step + 1) / total) * 100);
 
-  /* ── Estilos compartidos dentro del wizard ── */
-  const inputS = { width:"100%", padding:"15px 16px", border:"none", borderRadius:13, fontSize:14, outline:"none", background:"white", boxSizing:"border-box", color:"#1a1a1a", boxShadow:"0 1px 3px rgba(0,0,0,.06)" };
-  const Card   = ({ children, style }) => <div style={{ background:"white", borderRadius:16, padding:20, marginBottom:14, boxShadow:"0 1px 5px rgba(0,0,0,.06)", ...style }}>{children}</div>;
-  const SL     = ({ t }) => <div style={{ fontSize:11, fontWeight:700, color:"#6b7280", marginBottom:8, textTransform:"uppercase", letterSpacing:.5 }}>{t}</div>;
-  const FI     = ({ label, placeholder, value, onChange, type="text", multi=false }) => (
-    <div style={{ marginBottom:14 }}>
-      {label && <div style={{ fontSize:11, fontWeight:600, color:"#94A3B8", marginBottom:5 }}>{label}</div>}
-      {multi
-        ? <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={3} style={{ ...inputS, resize:"vertical" }}/>
-        : <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} style={inputS}/>
-      }
-    </div>
-  );
-  const AddB = ({ label, onClick, color=GREEN }) => (
-    <button onClick={onClick} style={{ width:"100%", padding:"14px", background:color, color:"white", border:"none", borderRadius:13, fontWeight:800, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:14 }}>
-      <span style={{ fontSize:16, fontWeight:300 }}>⊕</span> {label}
-    </button>
-  );
+  /* ── FI, SL, AddB, WCard definidos fuera del wizard (ver arriba) ── */
+  const Card = WCard;
 
   const TopBar = () => (
     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 20px", background:BG, borderBottom:"1px solid rgba(0,0,0,.05)", position:"sticky", top:0, zIndex:50 }}>
